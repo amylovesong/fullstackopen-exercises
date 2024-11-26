@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
-const StatisticLine = ({ text, value }) => <div>{text} {value}</div>
+// tr: table row, td: table data
+const StatisticLine = ({ text, value }) => <tr><td>{text}</td><td>{value}</td></tr>
 
 const Statistics = (props) => {
   const { good, neutral, bad, total } = props
@@ -10,13 +11,18 @@ const Statistics = (props) => {
   const positive_percentage = (good * 100 / total) + '%'
 
   if (total > 0) {
+    // table tag must have tbody tag inside
     return <div>
-      <StatisticLine text='good' value={good} />
-      <StatisticLine text='neutral' value={neutral} />
-      <StatisticLine text='bad' value={bad} />
-      <StatisticLine text='all' value={total} />
-      <StatisticLine text='average' value={average_score} />
-      <StatisticLine text='positive' value={positive_percentage} />
+      <table>
+        <tbody>
+          <StatisticLine text='good' value={good} />
+          <StatisticLine text='neutral' value={neutral} />
+          <StatisticLine text='bad' value={bad} />
+          <StatisticLine text='all' value={total} />
+          <StatisticLine text='average' value={average_score} />
+          <StatisticLine text='positive' value={positive_percentage} />
+        </tbody>
+      </table>
     </div>
   } else {
     return <div>No feedback given</div>
