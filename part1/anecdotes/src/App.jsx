@@ -13,22 +13,31 @@ const App = () => {
   ]
 
   const [selected, setSelected] = useState(0)
+  const [points, setPoints] = useState(new Array(anecdotes.length).fill(0))
 
-  console.log('rendering with selected:', selected)
+  console.log('rendering with selected:', selected, 'points:', points)
   
-  const handleClick = () => {
+  const handleNextClick = () => {
     const max = anecdotes.length
     const random = Math.random()
     const randomIndex = Math.floor(random * max)
-    console.log('handleClick with max:', max, 'random:', random, 'randomIndex:', randomIndex)
+    console.log('handleNextClick with max:', max, 'random:', random, 'randomIndex:', randomIndex)
     setSelected(randomIndex)
+  }
+
+  const handleVoteClick = () => {
+    const newPoints = [...points] // copy first
+    newPoints[selected] += 1 // update value of copy
+    setPoints(newPoints) // update state
   }
 
   return (
     <div>
       {anecdotes[selected]}
+      <div>has {points[selected]} votes</div>
       <div>
-        <button onClick={handleClick}>next anecdote</button>
+        <button onClick={handleVoteClick}>vote</button>
+        <button onClick={handleNextClick}>next anecdote</button>
       </div>
     </div>
   )
