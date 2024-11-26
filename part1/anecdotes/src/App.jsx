@@ -14,8 +14,9 @@ const App = () => {
 
   const [selected, setSelected] = useState(0)
   const [points, setPoints] = useState(new Array(anecdotes.length).fill(0))
+  const [maxPointIndex, setMaxPointIndex] = useState(0)
 
-  console.log('rendering with selected:', selected, 'points:', points)
+  console.log('rendering with selected:', selected, 'points:', points, 'maxPointIndex', maxPointIndex)
   
   const handleNextClick = () => {
     const max = anecdotes.length
@@ -28,17 +29,31 @@ const App = () => {
   const handleVoteClick = () => {
     const newPoints = [...points] // copy first
     newPoints[selected] += 1 // update value of copy
+
+    console.log('handleVoteClick with selected:', selected, 'newPoint:', newPoints[selected],
+      'maxPointIndex:', maxPointIndex, 'maxPoint:', points[maxPointIndex])
+    // update maxPointIndex when new max point is produced
+    if(newPoints[selected] >= points[maxPointIndex] && selected != maxPointIndex) {
+      console.log('handleVoteClick update maxPointIndex to', selected)
+      setMaxPointIndex(selected)
+    }
+
     setPoints(newPoints) // update state
   }
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       {anecdotes[selected]}
       <div>has {points[selected]} votes</div>
       <div>
         <button onClick={handleVoteClick}>vote</button>
         <button onClick={handleNextClick}>next anecdote</button>
       </div>
+
+      <h1>Anecdote with most votes</h1>
+      {anecdotes[maxPointIndex]}
+      <div>has {points[maxPointIndex]} votes</div>
     </div>
   )
 }
