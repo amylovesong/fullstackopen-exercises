@@ -18,10 +18,18 @@ const Content = ({ parts }) => {
   </div>
 }
 
+const Total = ({ parts }) => {
+  let total = 0
+  const mapResult = parts.map(part => total += part.exercise)
+  console.log('total:', total, 'mapResult:', mapResult);
+  return <h4>total of {total} exercises</h4>
+}
+
 const Course = ({ course }) => {
   return <div>
     <Header course={course.name} />
     <Content parts={course.parts} />
+    <Total parts={course.parts} />
   </div>
 }
 
@@ -44,6 +52,11 @@ const App = () => {
         name: 'State of a component',
         exercise: 14,
         id: 3
+      },
+      {
+        name: 'Redux',
+        exercise: 11,
+        id: 4
       }
     ]
   }
