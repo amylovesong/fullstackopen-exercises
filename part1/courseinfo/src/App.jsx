@@ -19,9 +19,13 @@ const Content = ({ parts }) => {
 }
 
 const Total = ({ parts }) => {
-  let total = 0
-  const mapResult = parts.map(part => total += part.exercise)
-  console.log('total:', total, 'mapResult:', mapResult);
+  const total = parts.reduce((previous, currentValue, curIndex) => {
+    console.log('reduce previous:', previous,
+      'currentValue:', currentValue, 'curIndex:', curIndex);
+    return previous + currentValue.exercise // currentValue is a part object
+  }, 0) // initial value is 0, so previous is 0 in the first loop
+  console.log('total:', total);
+
   return <h4>total of {total} exercises</h4>
 }
 
