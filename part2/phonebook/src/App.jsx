@@ -13,6 +13,13 @@ const App = () => {
 
   const addName = (event) => {
     event.preventDefault()
+    const existed = persons.filter(person => person.name === newName)
+    console.log('existed:', existed);
+    if (existed.length != 0) {
+      alert(`${newName} is already added to phonebook`)
+      return
+    }
+
     const newPerson = {
       name: newName
     }
