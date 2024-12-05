@@ -56,12 +56,23 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
-  const addName = (event) => {
+  const addPersonOrUpdate = (event) => {
     event.preventDefault()
-    const existed = persons.filter(person => person.name === newName)
+    const existed = persons.find(person => person.name === newName)
     console.log('existed:', existed);
-    if (existed.length !== 0) {
-      alert(`${newName} is already added to phonebook`)
+    if (existed) {
+      if (confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        // select OK and update
+        const changedPerson = {
+          ...existed,
+          number: newNumber
+        }
+        console.log('changedPerson', changedPerson);
+        update(changedPerson)
+      } else {
+        console.log('confirm cancelled');
+      }
+
       return
     }
 
@@ -69,6 +80,10 @@ const App = () => {
       name: newName,
       number: newNumber
     }
+    addPerson(newPerson)
+  }
+
+  const addPerson = (newPerson) => {
     phonebookService
       .create(newPerson)
       .then(returnedData => {
@@ -80,12 +95,27 @@ const App = () => {
       })
   }
 
-  const deleteName = (person) => {
+  const update = (changedPerson) => {
+    phonebookService
+      .update(changedPerson)
+      .then(returnedData => {
+        console.log('update fulfilled', returnedData);
+        // update component state
+        setPersons(persons
+          .filter(p => p.id !== changedPerson.id) // filter out unchanged persons
+          .concat(returnedData)) // add updated person
+        // reset input
+        setNewName('')
+        setNewNumber('')
+      })
+  }
+
+  const deletePerson = (person) => {
     // confirm() return value: true - OK, false - Cancel
     if (confirm(`Delete ${person.name} ?`)) {
       console.log('delete', person);
       phonebookService
-        .deleteName(person.id)
+        .deletePerson(person.id)
         .then(returnedData => {
           console.log('delete fulfilled', returnedData);
           setPersons(persons.filter(p => p.id !== returnedData.id))
@@ -113,7 +143,7 @@ const App = () => {
 
       <h3>Add a new</h3>
 
-      <PersonForm onSubmit={addName}
+      <PersonForm onSubmit={addPersonOrUpdate}
         name={newName}
         onNameChange={handleNameChange}
         number={newNumber}
@@ -122,7 +152,7 @@ const App = () => {
 
       <h3>Numbers</h3>
 
-      <Persons persons={personsToShow} onDeleteClick={deleteName}/>
+      <Persons persons={personsToShow} onDeleteClick={deletePerson} />
     </div>
   )
 }
