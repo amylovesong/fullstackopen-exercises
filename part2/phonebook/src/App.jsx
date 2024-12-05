@@ -54,20 +54,25 @@ const App = () => {
     event.preventDefault()
     const existed = persons.filter(person => person.name === newName)
     console.log('existed:', existed);
-    if (existed.length != 0) {
+    if (existed.length !== 0) {
       alert(`${newName} is already added to phonebook`)
       return
     }
 
+    const url = 'http://localhost:3001/persons'
     const newPerson = {
       name: newName,
-      number: newNumber,
-      id: persons.length + 1
+      number: newNumber
     }
-    setPersons(persons.concat(newPerson))
-    // reset
-    setNewName('')
-    setNewNumber('')
+    axios
+      .post(url, newPerson)
+      .then(response => {
+        // update component state
+        setPersons(persons.concat(response.data))
+        // reset input
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   const handleSearchWordsChange = (event) => {
