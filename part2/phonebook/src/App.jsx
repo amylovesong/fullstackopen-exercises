@@ -18,13 +18,19 @@ const PersonForm = ({ onSubmit, name, onNameChange, number, onNumberChange }) =>
     </div>
   </form>
 
-const Persons = ({ persons }) => <div>
+const Persons = ({ persons, onDeleteClick }) => <div>
   {persons.map(person =>
-    <Person key={person.id} info={person} />
+    <Person
+      key={person.id}
+      info={person}
+      onDeleteClick={() => onDeleteClick(person)} />
   )}
 </div>
 
-const Person = ({ info }) => <div>{info.name} {info.number}</div>
+const Person = ({ info, onDeleteClick }) => <div>
+  {info.name} {info.number}
+  <button onClick={onDeleteClick}>delete</button>
+</div>
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -74,6 +80,21 @@ const App = () => {
       })
   }
 
+  const deleteName = (person) => {
+    // confirm() return value: true - OK, false - Cancel
+    if (confirm(`Delete ${person.name} ?`)) {
+      console.log('delete', person);
+      phonebookService
+        .deleteName(person.id)
+        .then(returnedData => {
+          console.log('delete fulfilled', returnedData);
+          setPersons(persons.filter(p => p.id !== returnedData.id))
+        })
+    } else {
+      console.log('delete cancelled');
+    }
+  }
+
   const handleSearchWordsChange = (event) => {
     setSearchWords(event.target.value)
   }
@@ -101,7 +122,7 @@ const App = () => {
 
       <h3>Numbers</h3>
 
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} onDeleteClick={deleteName}/>
     </div>
   )
 }
