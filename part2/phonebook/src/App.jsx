@@ -32,11 +32,34 @@ const Person = ({ info, onDeleteClick }) => <div>
   <button onClick={onDeleteClick}>delete</button>
 </div>
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null // render nothing
+  }
+
+  const style = {
+    color: 'green',
+    backgroundColor: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+
+  return (
+    <div style={style}>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchWords, setSearchWords] = useState('')
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     phonebookService
@@ -92,6 +115,10 @@ const App = () => {
         // reset input
         setNewName('')
         setNewNumber('')
+        setMessage(`Added ${returnedData.name}`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000);
       })
   }
 
@@ -107,6 +134,10 @@ const App = () => {
         // reset input
         setNewName('')
         setNewNumber('')
+        setMessage(`Added ${returnedData.name}`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000);
       })
   }
 
@@ -138,6 +169,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={message} />
 
       <Filter onInputChange={handleSearchWordsChange} />
 
