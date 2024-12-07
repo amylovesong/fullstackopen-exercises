@@ -32,8 +32,8 @@ const Person = ({ info, onDeleteClick }) => <div>
   <button onClick={onDeleteClick}>delete</button>
 </div>
 
-const Notification = ({ message }) => {
-  if (message === null) {
+const Notification = ({ message, error }) => {
+  if (message === null && error === null) {
     return null // render nothing
   }
 
@@ -45,6 +45,18 @@ const Notification = ({ message }) => {
     borderRadius: 5,
     padding: 10,
     marginBottom: 10
+  }
+
+  if (error) {
+    const errorStyle = {
+      ...style,
+      color: 'red'
+    }
+    return (
+      <div style={errorStyle}>
+        {error}
+      </div>
+    )
   }
 
   return (
@@ -60,6 +72,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [searchWords, setSearchWords] = useState('')
   const [message, setMessage] = useState(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     phonebookService
@@ -129,7 +142,7 @@ const App = () => {
         console.log('update fulfilled', returnedData);
         // update component state
         setPersons(persons
-          .filter(p => p.id !== changedPerson.id) // filter out unchanged persons
+          .filter(p => p.id !== changedPerson.id) // filter out the changed person
           .concat(returnedData)) // add updated person
         // reset input
         setNewName('')
@@ -138,6 +151,13 @@ const App = () => {
         setTimeout(() => {
           setMessage(null)
         }, 5000);
+      })
+      .catch(error => {
+        setError(`Information of ${changedPerson.name} has already been removed from server`)
+        setTimeout(() => {
+          setError(null) // reset error state
+        }, 5000);
+        setPersons(persons.filter(p => p.id !== changedPerson.id)) // filter out the deleted person
       })
   }
 
@@ -170,7 +190,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
-      <Notification message={message} />
+      <Notification message={message} error={error} />
 
       <Filter onInputChange={handleSearchWordsChange} />
 
