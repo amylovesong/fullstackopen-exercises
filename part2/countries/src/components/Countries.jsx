@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react"
+
 const Countries = ({ countries }) => {
   console.log('Countries', countries);
   if (countries.length === 0) {
@@ -15,12 +17,34 @@ const Countries = ({ countries }) => {
   return <CountryView country={countries[0]} />
 }
 
-const CountryList = ({ countries }) => {
-  return countries.map(c => <div key={c.name.common}>{c.name.common}</div>)
+const CountryList = ({ countries, onShowClick }) => {
+  console.log('CountryList', countries);
+  const [countryToShow, setCountryToShow] = useState(null)
+
+  useEffect(() => {
+    console.log('CountryList effect');
+    setCountryToShow(null) // reset state when search result changed
+  }, [countries])
+
+  const handleShowClick = (country) => {
+    console.log('handleShowClick', country);
+    setCountryToShow(country)
+  }
+
+  return <div>
+    {countries.map(c => <div key={c.name.common}>
+      {c.name.common}
+      <button onClick={() => handleShowClick(c)}>show</button>
+    </div>)}
+    <CountryView country={countryToShow} />
+  </div>
 }
 
 const CountryView = ({ country }) => {
-  console.log('country', country);
+  console.log('CountryView', country);
+  if (!country) {
+    return null
+  }
 
   const imgStyle = {
     marginTop: 15
@@ -29,7 +53,7 @@ const CountryView = ({ country }) => {
     <div>
       <h2>{country.name.common}</h2>
 
-      <div>captical {country.capital[0]}</div>
+      <div>captical {country.capital ? country.capital[0] : ''}</div>
       <div>area {country.area}</div>
 
       <Languages languages={country.languages} />
