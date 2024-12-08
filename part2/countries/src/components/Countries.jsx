@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react"
+import axios from 'axios'
+
+const WEATHER_API_KEY = import.meta.env.VITE_OPEN_WEATER_MAP_API_KEY
 
 const Countries = ({ countries }) => {
   console.log('Countries', countries);
@@ -46,19 +49,34 @@ const CountryView = ({ country }) => {
     return null
   }
 
+  const [weather, setWeater] = useState(null)
+
+  useEffect(() => {
+    const [lat, lng] = country.latlng
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${WEATHER_API_KEY}&units=metric`
+    axios
+      .get(url)
+      .then(response => {
+        setWeater(response.data)
+      })
+  }, [country])
+
   const imgStyle = {
     marginTop: 15
   }
+  const capital = country.capital ? country.capital[0] : ''
   return (
     <div>
       <h2>{country.name.common}</h2>
 
-      <div>captical {country.capital ? country.capital[0] : ''}</div>
+      <div>captical {capital}</div>
       <div>area {country.area}</div>
 
       <Languages languages={country.languages} />
 
       <img width={160} style={imgStyle} src={country.flags.png} />
+
+      <Weather city={capital} weather={weather} />
     </div>
   )
 }
@@ -75,6 +93,20 @@ const Languages = ({ languages }) => {
       <li key={lan} style={style}>{lan}</li>
     )}
   </>
+}
+
+const Weather = ({ city, weather }) => {
+  console.log('Weather city', city, 'weather', weather);
+  if (!weather) {
+    return null
+  }
+
+  return <div>
+    <h3>Weather in {city}</h3>
+    <div>temperature {weather.main.temp} Celsius</div>
+    <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}/>
+    <div>wind {weather.wind.speed} m/s</div>
+  </div>
 }
 
 export default Countries
