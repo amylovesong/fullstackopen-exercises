@@ -1,70 +1,9 @@
 import { useEffect, useState } from "react"
 import phonebookService from "./services/phonebook"
-
-const Filter = ({ onInputChange }) => <div>
-  filter shown with<input onChange={onInputChange} />
-</div>
-
-const PersonForm = ({ onSubmit, name, onNameChange, number, onNumberChange }) =>
-  <form onSubmit={onSubmit}>
-    <div>
-      name: <input value={name} onChange={onNameChange} />
-    </div>
-    <div>
-      number: <input value={number} onChange={onNumberChange} />
-    </div>
-    <div>
-      <button type="submit">add</button>
-    </div>
-  </form>
-
-const Persons = ({ persons, onDeleteClick }) => <div>
-  {persons.map(person =>
-    <Person
-      key={person.id}
-      info={person}
-      onDeleteClick={() => onDeleteClick(person)} />
-  )}
-</div>
-
-const Person = ({ info, onDeleteClick }) => <div>
-  {info.name} {info.number}
-  <button onClick={onDeleteClick}>delete</button>
-</div>
-
-const Notification = ({ message, error }) => {
-  if (message === null && error === null) {
-    return null // render nothing
-  }
-
-  const style = {
-    color: 'green',
-    backgroundColor: 'lightgrey',
-    fontSize: 20,
-    borderStyle: 'solid',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10
-  }
-
-  if (error) {
-    const errorStyle = {
-      ...style,
-      color: 'red'
-    }
-    return (
-      <div style={errorStyle}>
-        {error}
-      </div>
-    )
-  }
-
-  return (
-    <div style={style}>
-      {message}
-    </div>
-  )
-}
+import Notification from "./components/Notification"
+import Filter from "./components/Filter"
+import PersonForm from "./components/PersonForm"
+import Persons from "./components/Persons"
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -125,13 +64,8 @@ const App = () => {
       .then(returnedData => {
         // update component state
         setPersons(persons.concat(returnedData))
-        // reset input
-        setNewName('')
-        setNewNumber('')
-        setMessage(`Added ${returnedData.name}`)
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000);
+        clearNewNumberInput()
+        showSuccessfulNotification(`Added ${returnedData.name}`)
       })
   }
 
@@ -144,13 +78,8 @@ const App = () => {
         setPersons(persons
           .filter(p => p.id !== changedPerson.id) // filter out the changed person
           .concat(returnedData)) // add updated person
-        // reset input
-        setNewName('')
-        setNewNumber('')
-        setMessage(`Added ${returnedData.name}`)
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000);
+        clearNewNumberInput()
+        showSuccessfulNotification(`Added ${returnedData.name}`)
       })
       .catch(error => {
         setError(`Information of ${changedPerson.name} has already been removed from server`)
@@ -159,6 +88,18 @@ const App = () => {
         }, 5000);
         setPersons(persons.filter(p => p.id !== changedPerson.id)) // filter out the deleted person
       })
+  }
+
+  const clearNewNumberInput = () => {
+    setNewName('')
+    setNewNumber('')
+  }
+
+  const showSuccessfulNotification = (message) => {
+    setMessage(message)
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
   }
 
   const deletePerson = (person) => {
