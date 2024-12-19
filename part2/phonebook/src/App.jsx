@@ -108,9 +108,9 @@ const App = () => {
       console.log('delete', person);
       phonebookService
         .deletePerson(person.id)
-        .then(returnedData => {
-          console.log('delete fulfilled', returnedData);
-          setPersons(persons.filter(p => p.id !== returnedData.id))
+        .then(result => {
+          console.log('delete fulfilled', result);
+          setPersons(persons.filter(p => p.id !== person.id))
         })
     } else {
       console.log('delete cancelled');
