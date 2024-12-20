@@ -67,6 +67,9 @@ const App = () => {
         clearNewNumberInput()
         showSuccessfulNotification(`Added ${returnedData.name}`)
       })
+      .catch(error => {
+        showErrorNotification(error.response.data.error)
+      })
   }
 
   const update = (changedPerson) => {
@@ -82,10 +85,7 @@ const App = () => {
         showSuccessfulNotification(`Added ${returnedData.name}`)
       })
       .catch(error => {
-        setError(`Information of ${changedPerson.name} has already been removed from server`)
-        setTimeout(() => {
-          setError(null) // reset error state
-        }, 5000);
+        showErrorNotification(`Information of ${changedPerson.name} has already been removed from server`)
         setPersons(persons.filter(p => p.id !== changedPerson.id)) // filter out the deleted person
       })
   }
@@ -100,6 +100,13 @@ const App = () => {
     setTimeout(() => {
       setMessage(null)
     }, 5000)
+  }
+
+  const showErrorNotification = (error) => {
+    setError(error)
+    setTimeout(() => {
+      setError(null) // reset error state
+    }, 5000);
   }
 
   const deletePerson = (person) => {
