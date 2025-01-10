@@ -1,10 +1,16 @@
 import { useState } from "react"
 
-const Blog = ({ blog, handleLike }) => {
+const Blog = ({ user, blog, handleLike, handleDelete }) => {
   const [showDetails, setShowDetails] = useState(false)
 
   const toggleShowDetails = () => {
     setShowDetails(!showDetails)
+  }
+
+  const showDelete = () => {
+    console.log('showDelete user:', user, 'blog:', blog)
+    return user.username === blog.user.username
+      && user.name === blog.user.name
   }
 
   const blogStyle = {
@@ -23,6 +29,9 @@ const Blog = ({ blog, handleLike }) => {
         <button onClick={() => handleLike(blog)}>like</button>
       </div>
       <div>{blog.user.name}</div>
+      {showDelete()
+        ? <button onClick={() => handleDelete(blog)}>remove</button>
+        : null}
     </div>
   }
 
