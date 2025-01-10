@@ -69,7 +69,7 @@ const App = () => {
         setMessage(null)
       }, 5000)
     } catch (exception) {
-      console.error('handleCreate error:', exception);
+      console.error('handleCreate error:', exception)
     }
   }
 
@@ -92,7 +92,7 @@ const App = () => {
       url: blog.url
     }
     console.log('handleLike newBlog:', newBlog)
-    
+
     const returnedBlog = await blogService.update(blog.id, newBlog)
     console.log('handleLike returnedBlog:', returnedBlog)
     setBlogs(blogs
@@ -142,9 +142,9 @@ const App = () => {
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
       </div>
-      <p/>
+      <p />
       <Togglable buttonLabel='new note' ref={blogFormRef}>
-        <BlogForm createBlog={handleCreate}/>
+        <BlogForm createBlog={handleCreate} />
       </Togglable>
       {blogs
         .sort((cur, next) => next.likes - cur.likes)
@@ -155,7 +155,7 @@ const App = () => {
             handleLike={handleLike}
             handleDelete={handleDelete}
           />
-      )}
+        )}
     </div>
   )
 }
