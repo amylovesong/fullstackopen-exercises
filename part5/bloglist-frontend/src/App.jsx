@@ -73,6 +73,25 @@ const App = () => {
     }
   }
 
+  const handleLike = async (blog) => {
+    console.log('handleLike:', blog)
+
+    const newBlog = {
+      user: blog.user.id,
+      likes: blog.likes + 1,
+      author: blog.author,
+      title: blog.title,
+      url: blog.url
+    }
+    console.log('handleLike newBlog:', newBlog)
+    
+    const returnedBlog = await blogService.update(blog.id, newBlog)
+    console.log('handleLike returnedBlog:', returnedBlog)
+    setBlogs(blogs
+      .filter(b => b.id !== blog.id)
+      .concat(returnedBlog))
+  }
+
   const blogFormRef = useRef()
 
   if (user === null) {
@@ -120,7 +139,7 @@ const App = () => {
         <BlogForm createBlog={handleCreate}/>
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} handleLike={handleLike}/>
       )}
     </div>
   )
