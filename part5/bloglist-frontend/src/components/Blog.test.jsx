@@ -54,3 +54,27 @@ test('show URL and likes number when button clicked', async () => {
   const likesDiv = screen.getByText('10')
   expect(likesDiv).toBeDefined()
 })
+
+test('click the like button twice calls event handler twice', async () => {
+  const mockLikeHandler = vi.fn()
+  const mockUser = userEvent.setup()
+
+  render(<Blog
+    user={user}
+    blog={blog}
+    handleLike={mockLikeHandler}
+    handleDelete={handleDelete}
+  />)
+
+  // click view button to show blog details
+  const viewBtn = screen.getByText('view')
+  await mockUser.click(viewBtn)
+
+  // act
+  const likeBtn = screen.getByText('like')
+  await mockUser.click(likeBtn)
+  await mockUser.click(likeBtn)
+
+  // verify
+  expect(mockLikeHandler.mock.calls).toHaveLength(2)
+})
