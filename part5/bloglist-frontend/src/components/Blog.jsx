@@ -26,7 +26,7 @@ const Blog = ({ user, blog, handleLike, handleDelete }) => {
     return <div>
       <div>{blog.url}</div>
       <div>
-        {blog.likes}
+        <span data-testid='likes'>{blog.likes}</span>
         <button onClick={() => handleLike(blog)}>like</button>
       </div>
       <div>{blog.user.name}</div>
@@ -37,8 +37,8 @@ const Blog = ({ user, blog, handleLike, handleDelete }) => {
   }
 
   return (
-    <div style={blogStyle}>
-      {blog.title} {blog.author}
+    <div data-testid='blog' style={blogStyle}>
+      <span>{blog.title} {blog.author}</span>
       <button onClick={toggleShowDetails}>{showDetails ? 'hide' : 'view'}</button>
       {showDetails && blogDetails(blog)}
     </div>

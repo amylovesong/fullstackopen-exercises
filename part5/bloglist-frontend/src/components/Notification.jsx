@@ -17,7 +17,7 @@ const Notification = ({ message, type }) => {
     marginBottom: 10
   }
 
-  return <div style={style}>{message}</div>
+  return <div style={style} className='notification'>{message}</div>
 }
 
 Notification.propTypes = {
