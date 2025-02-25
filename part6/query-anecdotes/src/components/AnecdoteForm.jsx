@@ -15,6 +15,10 @@ const AnecdoteForm = () => {
         `anecdote '${newAnecdote.content}' added`,
         notificationDispatch
       )
+    },
+    onError: (err) => {
+      console.log('err:', err)
+      showNotification(err.response.data.error, notificationDispatch)
     }
   })
 
