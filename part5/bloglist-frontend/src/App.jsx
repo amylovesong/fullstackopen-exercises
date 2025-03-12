@@ -5,14 +5,16 @@ import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import BlogForm from './components/BlogForm'
+import { useDispatch } from 'react-redux'
+import { clearNotification, createErrorNotification, createNotification } from './reducers/notificationReducer'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [error, setError] = useState(null)
-  const [message, setMessage] = useState(null)
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -46,9 +48,9 @@ const App = () => {
       setPassword('')
     } catch (exception) {
       console.error('handleLogin error:', exception)
-      setError('wrong username or password')
+      dispatch(createErrorNotification('wrong username or password'))
       setTimeout(() => {
-        setError(null)
+        dispatch(clearNotification())
       }, 5000)
     }
   }
@@ -64,9 +66,11 @@ const App = () => {
       blogFormRef.current.toggleVisibility()
       const returnedBlog = await blogService.create(newBlog)
       setBlogs(blogs.concat(returnedBlog))
-      setMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+      dispatch(createNotification(
+        `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
+      ))
       setTimeout(() => {
-        setMessage(null)
+        dispatch(clearNotification())
       }, 5000)
     } catch (exception) {
       console.error('handleCreate error:', exception)
@@ -106,7 +110,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        <Notification message={error} type='error' />
+        <Notification />
 
         <form onSubmit={handleLogin}>
           <div>
@@ -138,7 +142,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={message} />
+      <Notification />
 
       <div>
         {user.name} logged in
