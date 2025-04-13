@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
@@ -7,6 +6,8 @@ import loginService from './services/login'
 import BlogForm from './components/BlogForm'
 import { useDispatch } from 'react-redux'
 import { clearNotification, createErrorNotification, createNotification } from './reducers/notificationReducer'
+import { createBlog, initializeBlogs } from './reducers/blogReducer'
+import Blogs from './components/Blogs'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -17,9 +18,7 @@ const App = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    dispatch(initializeBlogs())
   }, [])
 
   useEffect(() => {
@@ -64,10 +63,9 @@ const App = () => {
   const handleCreate = async (newBlog) => {
     try {
       blogFormRef.current.toggleVisibility()
-      const returnedBlog = await blogService.create(newBlog)
-      setBlogs(blogs.concat(returnedBlog))
+      dispatch(createBlog(newBlog))
       dispatch(createNotification(
-        `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
+        `a new blog ${newBlog.title} by ${newBlog.author} added`
       ))
       setTimeout(() => {
         dispatch(clearNotification())
@@ -152,16 +150,7 @@ const App = () => {
       <Togglable buttonLabel='new note' ref={blogFormRef}>
         <BlogForm createBlog={handleCreate} />
       </Togglable>
-      {blogs
-        .sort((cur, next) => next.likes - cur.likes)
-        .map(blog =>
-          <Blog key={blog.id}
-            user={user}
-            blog={blog}
-            handleLike={handleLike}
-            handleDelete={handleDelete}
-          />
-        )}
+      <Blogs user={user} handleLike={handleLike} handleDelete={handleDelete} />
     </div>
   )
 }
