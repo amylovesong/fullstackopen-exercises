@@ -10,7 +10,6 @@ import { createBlog, initializeBlogs } from './reducers/blogReducer'
 import Blogs from './components/Blogs'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -75,33 +74,6 @@ const App = () => {
     }
   }
 
-  const handleDelete = async (blog) => {
-    console.log('handleDelete blog:', blog)
-    if (confirm(`Remove blog ${blog.title} by ${blog.user.name}`)) {
-      await blogService.deleteBlog(blog)
-      setBlogs(blogs.filter(b => b.id !== blog.id))
-    }
-  }
-
-  const handleLike = async (blog) => {
-    console.log('handleLike:', blog)
-
-    const newBlog = {
-      user: blog.user.id,
-      likes: blog.likes + 1,
-      author: blog.author,
-      title: blog.title,
-      url: blog.url
-    }
-    console.log('handleLike newBlog:', newBlog)
-
-    const returnedBlog = await blogService.update(blog.id, newBlog)
-    console.log('handleLike returnedBlog:', returnedBlog)
-    setBlogs(blogs
-      .filter(b => b.id !== blog.id)
-      .concat(returnedBlog))
-  }
-
   const blogFormRef = useRef()
 
   if (user === null) {
@@ -150,7 +122,7 @@ const App = () => {
       <Togglable buttonLabel='new note' ref={blogFormRef}>
         <BlogForm createBlog={handleCreate} />
       </Togglable>
-      <Blogs user={user} handleLike={handleLike} handleDelete={handleDelete} />
+      <Blogs user={user} />
     </div>
   )
 }

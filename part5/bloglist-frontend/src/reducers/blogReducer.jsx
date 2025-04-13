@@ -28,6 +28,20 @@ export const createBlog = (blog) => {
   }
 }
 
+export const updateBlog = (id, blog) => {
+  return async (dispatch, getState) => {
+    const updatedBlog = await blogService.update(id, blog)
+    dispatch(setBlogs(getState().blogs.map(blog => (blog.id === id ? updatedBlog : blog))))
+  }
+}
+
+export const deleteBlog = (blog) => {
+  return async (dispatch, getState) => {
+    await blogService.deleteBlog(blog)
+    dispatch(setBlogs(getState().blogs.filter(b => b.id !== blog.id)))
+  }
+}
+
 export const { appendBlog, setBlogs } = blogSlice.actions
 
 export default blogSlice.reducer
