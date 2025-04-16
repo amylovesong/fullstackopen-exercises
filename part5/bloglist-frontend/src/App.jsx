@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
@@ -7,20 +6,17 @@ import loginService from './services/login'
 import BlogForm from './components/BlogForm'
 import { clearNotification, setErrorNotification, setNotification } from './reducers/notificationReducer'
 import { useNotificationDispatch } from './NotificationContext'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { clearUser, setUser } from './reducers/userReducer'
+import { useUserContext } from './UserContext'
+import Blogs from './components/Blogs'
 
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  const [user, userDispatch] = useUserContext()
 
   const messageDispatch = useNotificationDispatch()
-
-  const result = useQuery({
-    queryKey: ['blogs'],
-    queryFn: () => blogService.getAll()
-  })
-  console.log('result:', JSON.stringify(result))
 
   const queryClient = useQueryClient()
 
@@ -35,27 +31,11 @@ const App = () => {
     onSuccess: refreshBlogs
   })
 
-  const likeBlogMutation = useMutation({
-    mutationFn: async (newBlog) => {
-      console.log('likeBlogMutation newBlog:', newBlog)
-      await blogService.update(newBlog.id, newBlog)
-    },
-    onSuccess: () => {
-      console.log('likeBlogMutation onSuccess')
-      refreshBlogs()
-    }
-  })
-
-  const deleteMutation = useMutation({
-    mutationFn: (blog) => blogService.deleteBlog(blog),
-    onSuccess: refreshBlogs
-  })
-
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      userDispatch(setUser(user))
       blogService.setToken(user.token)
     }
   }, [])
@@ -72,7 +52,7 @@ const App = () => {
         JSON.stringify(user)
       )
       blogService.setToken(user.token)
-      setUser(user)
+      userDispatch(setUser(user))
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -86,7 +66,7 @@ const App = () => {
 
   const handleLogout = (event) => {
     window.localStorage.removeItem('loggedBloglistAppUser')
-    setUser(null)
+    userDispatch(clearUser())
     blogService.setToken('')
   }
 
@@ -103,23 +83,6 @@ const App = () => {
     } catch (exception) {
       console.error('handleCreate error:', exception)
     }
-  }
-
-  const handleDelete = async (blog) => {
-    console.log('handleDelete blog:', blog)
-    if (confirm(`Remove blog ${blog.title} by ${blog.user.name}`)) {
-      deleteMutation.mutate(blog)
-    }
-  }
-
-  const handleLike = async (blog) => {
-    const newBlog = {
-      ...blog,
-      user: blog.user.id,
-      likes: blog.likes + 1,
-    }
-    console.log('handleLike blog:', blog, '\n\tnewBlog:', newBlog)
-    likeBlogMutation.mutate(newBlog)
   }
 
   const blogFormRef = useRef()
@@ -157,12 +120,6 @@ const App = () => {
     )
   }
 
-  if (result.isLoading) {
-    return <div>loading data...</div>
-  }
-
-  const blogs = result.data
-
   return (
     <div>
       <h2>blogs</h2>
@@ -176,16 +133,7 @@ const App = () => {
       <Togglable buttonLabel='new note' ref={blogFormRef}>
         <BlogForm createBlog={handleCreate} />
       </Togglable>
-      {blogs
-        .sort((cur, next) => next.likes - cur.likes)
-        .map(blog =>
-          <Blog key={blog.id}
-            user={user}
-            blog={blog}
-            handleLike={handleLike}
-            handleDelete={handleDelete}
-          />
-        )}
+      <Blogs />
     </div>
   )
 }
