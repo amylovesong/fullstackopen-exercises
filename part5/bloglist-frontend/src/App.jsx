@@ -24,12 +24,31 @@ const App = () => {
 
   const queryClient = useQueryClient()
 
+  const refreshBlogs = () => {
+    console.log('refreshBlogs')
+    // Invalidate and refetch
+    queryClient.invalidateQueries({ queryKey: ['blogs'] })
+  }
+
   const newBlogMutation = useMutation({
     mutationFn: (newBlog) => blogService.create(newBlog),
+    onSuccess: refreshBlogs
+  })
+
+  const likeBlogMutation = useMutation({
+    mutationFn: async (newBlog) => {
+      console.log('likeBlogMutation newBlog:', newBlog)
+      await blogService.update(newBlog.id, newBlog)
+    },
     onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+      console.log('likeBlogMutation onSuccess')
+      refreshBlogs()
     }
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: (blog) => blogService.deleteBlog(blog),
+    onSuccess: refreshBlogs
   })
 
   useEffect(() => {
@@ -89,28 +108,18 @@ const App = () => {
   const handleDelete = async (blog) => {
     console.log('handleDelete blog:', blog)
     if (confirm(`Remove blog ${blog.title} by ${blog.user.name}`)) {
-      await blogService.deleteBlog(blog)
-      setBlogs(blogs.filter(b => b.id !== blog.id))
+      deleteMutation.mutate(blog)
     }
   }
 
   const handleLike = async (blog) => {
-    console.log('handleLike:', blog)
-
     const newBlog = {
+      ...blog,
       user: blog.user.id,
       likes: blog.likes + 1,
-      author: blog.author,
-      title: blog.title,
-      url: blog.url
     }
-    console.log('handleLike newBlog:', newBlog)
-
-    const returnedBlog = await blogService.update(blog.id, newBlog)
-    console.log('handleLike returnedBlog:', returnedBlog)
-    setBlogs(blogs
-      .filter(b => b.id !== blog.id)
-      .concat(returnedBlog))
+    console.log('handleLike blog:', blog, '\n\tnewBlog:', newBlog)
+    likeBlogMutation.mutate(newBlog)
   }
 
   const blogFormRef = useRef()

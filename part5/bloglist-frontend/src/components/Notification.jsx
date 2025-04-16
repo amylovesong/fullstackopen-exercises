@@ -2,7 +2,7 @@ import { useNotificationValue } from "../NotificationContext"
 
 const Notification = () => {
   const message = useNotificationValue()
-  console.log('Notification', message)
+  // console.log('Notification', message)
 
   if (message === null) {
     return null
