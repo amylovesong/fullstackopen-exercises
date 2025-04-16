@@ -7,20 +7,30 @@ import loginService from './services/login'
 import BlogForm from './components/BlogForm'
 import { clearNotification, setErrorNotification, setNotification } from './reducers/notificationReducer'
 import { useNotificationDispatch } from './NotificationContext'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const messageDispatch = useNotificationDispatch()
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
-  }, [])
+  const result = useQuery({
+    queryKey: ['blogs'],
+    queryFn: () => blogService.getAll()
+  })
+  console.log('result:', JSON.stringify(result))
+
+  const queryClient = useQueryClient()
+
+  const newBlogMutation = useMutation({
+    mutationFn: (newBlog) => blogService.create(newBlog),
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    }
+  })
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistAppUser')
@@ -64,8 +74,7 @@ const App = () => {
   const handleCreate = async (newBlog) => {
     try {
       blogFormRef.current.toggleVisibility()
-      const returnedBlog = await blogService.create(newBlog)
-      setBlogs(blogs.concat(returnedBlog))
+      const returnedBlog = await newBlogMutation.mutateAsync(newBlog)
       messageDispatch(setNotification(
         `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
       )
@@ -138,6 +147,12 @@ const App = () => {
       </div>
     )
   }
+
+  if (result.isLoading) {
+    return <div>loading data...</div>
+  }
+
+  const blogs = result.data
 
   return (
     <div>
