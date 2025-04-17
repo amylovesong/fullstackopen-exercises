@@ -7,6 +7,7 @@ import { clearNotification, createErrorNotification, createNotification } from '
 import { createBlog, initializeBlogs } from './reducers/blogReducer'
 import Blogs from './components/Blogs'
 import { initializeUser, userLogin, userLogout } from './reducers/userReducer'
+import Users from './components/Users'
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -104,10 +105,11 @@ const App = () => {
         <button onClick={handleLogout}>logout</button>
       </div>
       <p />
-      <Togglable buttonLabel='new note' ref={blogFormRef}>
+      <Users />
+      {/* <Togglable buttonLabel='new note' ref={blogFormRef}>
         <BlogForm createBlog={handleCreate} />
       </Togglable>
-      <Blogs user={user} />
+      <Blogs user={user} /> */}
     </div>
   )
 }
