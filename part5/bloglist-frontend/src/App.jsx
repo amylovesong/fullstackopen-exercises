@@ -8,12 +8,16 @@ import { createBlog, initializeBlogs } from './reducers/blogReducer'
 import Blogs from './components/Blogs'
 import { initializeUser, userLogin, userLogout } from './reducers/userReducer'
 import Users from './components/Users'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import User from './components/User'
+import { initializeUsers } from './reducers/usersReducer'
 
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const user = useSelector(state => state.user)
+  const users = useSelector(state => state.users)
 
   const dispatch = useDispatch()
 
@@ -23,6 +27,10 @@ const App = () => {
 
   useEffect(() => {
     dispatch(initializeUser())
+  }, [])
+
+  useEffect(() => {
+    dispatch(initializeUsers())
   }, [])
 
   const handleLogin = async (event) => {
@@ -105,7 +113,12 @@ const App = () => {
         <button onClick={handleLogout}>logout</button>
       </div>
       <p />
-      <Users />
+      <Router>
+        <Routes>
+          <Route path='/' element={<Users users={users}/>} />
+          <Route path='/users/:id' element={<User users={users}/>} />
+        </Routes>
+      </Router>
       {/* <Togglable buttonLabel='new note' ref={blogFormRef}>
         <BlogForm createBlog={handleCreate} />
       </Togglable>
