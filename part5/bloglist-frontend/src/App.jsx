@@ -3,12 +3,14 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
 import { useDispatch, useSelector } from 'react-redux'
+import { createSelector } from 'reselect'
 import { clearNotification, createErrorNotification, createNotification } from './reducers/notificationReducer'
 import { createBlog, initializeBlogs } from './reducers/blogReducer'
 import Blogs from './components/Blogs'
+import Blog from './components/Blog'
 import { initializeUser, userLogin, userLogout } from './reducers/userReducer'
 import Users from './components/Users'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { Route, Routes, useMatch } from 'react-router-dom'
 import User from './components/User'
 import { initializeUsers } from './reducers/usersReducer'
 
@@ -18,6 +20,20 @@ const App = () => {
 
   const user = useSelector(state => state.user)
   const users = useSelector(state => state.users)
+
+  // https://redux.js.org/usage/deriving-data-selectors#optimizing-selectors-with-memoization
+  const selectSortedBlogs = createSelector(
+    state => state.blogs, // input selector
+    blogs => [...blogs].sort((a, b) => b.likes - a.likes) // output selector
+  )
+
+  const blogs = useSelector(selectSortedBlogs)
+  console.log('blogs:', blogs)
+
+  const blogMatch = useMatch('/blogs/:id')
+  const blog = blogMatch
+    ? blogs.find(blog => blog.id === blogMatch.params.id)
+    : null
 
   const dispatch = useDispatch()
 
@@ -110,19 +126,22 @@ const App = () => {
 
       <div>
         {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
       </div>
       <p />
-      <Router>
-        <Routes>
-          <Route path='/' element={<Users users={users}/>} />
-          <Route path='/users/:id' element={<User users={users}/>} />
-        </Routes>
-      </Router>
-      {/* <Togglable buttonLabel='new note' ref={blogFormRef}>
-        <BlogForm createBlog={handleCreate} />
-      </Togglable>
-      <Blogs user={user} /> */}
+      <button onClick={handleLogout}>logout</button>
+      <Routes>
+        <Route path='/' element={
+          <div>
+            <Togglable buttonLabel='new note' ref={blogFormRef}>
+              <BlogForm createBlog={handleCreate} />
+            </Togglable>
+            <Blogs blogs={blogs} />
+          </div>
+        } />
+        <Route path='/blogs/:id' element={<Blog blog={blog}/>} />
+        <Route path='/users' element={<Users users={users}/>} />
+        <Route path='/users/:id' element={<User users={users}/>} />
+      </Routes>
     </div>
   )
 }

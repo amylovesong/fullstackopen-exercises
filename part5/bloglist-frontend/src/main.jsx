@@ -6,6 +6,7 @@ import notificationReducer from './reducers/notificationReducer'
 import userReducer from './reducers/userReducer'
 import usersReducer from './reducers/usersReducer'
 import { Provider } from 'react-redux'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,8 @@ const store = configureStore({
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store={store}>
-    <App />
+    <Router>
+      <App />
+    </Router>
   </Provider>
 )
