@@ -10,7 +10,7 @@ import Blogs from './components/Blogs'
 import Blog from './components/Blog'
 import { initializeUser, userLogin, userLogout } from './reducers/userReducer'
 import Users from './components/Users'
-import { Route, Routes, useMatch } from 'react-router-dom'
+import { Link, Route, Routes, useMatch } from 'react-router-dom'
 import User from './components/User'
 import { initializeUsers } from './reducers/usersReducer'
 
@@ -119,16 +119,27 @@ const App = () => {
     )
   }
 
+  const navItemStyle = {
+    padding: 2
+  }
+
+  const navStyle = {
+    padding: 2,
+    backgroundColor: '#d8d8d8',
+  }
+
   return (
     <div>
-      <h2>blogs</h2>
-      <Notification />
-
-      <div>
-        {user.name} logged in
+      <div style={navStyle}>
+        <Link to='/' style={navItemStyle}>blogs</Link>
+        <Link to='/users' style={navItemStyle}>users</Link>
+        <span style={navItemStyle}>{user.name} logged in</span>
+        <button onClick={handleLogout}>logout</button>
       </div>
+      <h2>blog app</h2>
+      <Notification />
       <p />
-      <button onClick={handleLogout}>logout</button>
+      
       <Routes>
         <Route path='/' element={
           <div>
