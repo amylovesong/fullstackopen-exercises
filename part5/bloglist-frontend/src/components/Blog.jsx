@@ -2,11 +2,11 @@ import { updateBlog } from '../reducers/blogReducer'
 import { useDispatch } from 'react-redux'
 
 const Blog = ({ blog }) => {
+  const dispatch = useDispatch()
+
   if (!blog) {
     return null
   }
-
-  const dispatch = useDispatch()
 
   const handleLike = (blog) => {
     const newBlog = {
@@ -15,7 +15,7 @@ const Blog = ({ blog }) => {
       likes: blog.likes + 1,
     }
     console.log('handleLike blog:', blog, 'newBlog:', newBlog)
-  
+
     dispatch(updateBlog(blog.id, newBlog))
   }
 
@@ -32,6 +32,24 @@ const Blog = ({ blog }) => {
         <button onClick={() => handleLike(blog)}>like</button>
       </div>
       <div>added by {blog.user.name}</div>
+      <Comments comments={blog.comments} />
+    </div>
+  )
+}
+
+const Comments = ({ comments }) => {
+  return (
+    <div>
+      <h3>comments</h3>
+      {
+        (!comments || comments.length === 0)
+          ? <div>No comments yet</div>
+          : <ul>
+            {comments.map((comment, index) => (
+              <li key={index}>{comment}</li>
+            ))}
+          </ul>
+      }
     </div>
   )
 }
