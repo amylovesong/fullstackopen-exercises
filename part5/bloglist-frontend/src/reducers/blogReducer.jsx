@@ -35,6 +35,13 @@ export const updateBlog = (id, blog) => {
   }
 }
 
+export const addComment = (id, comment) => {
+  return async (dispatch, getState) => {
+    const updatedBlog = await blogService.addComment(id, comment)
+    dispatch(setBlogs(getState().blogs.map(blog => (blog.id === id ? updatedBlog : blog))))
+  }
+}
+
 export const deleteBlog = (blog) => {
   return async (dispatch, getState) => {
     await blogService.deleteBlog(blog)

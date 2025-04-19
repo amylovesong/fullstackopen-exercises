@@ -1,4 +1,4 @@
-import { updateBlog } from '../reducers/blogReducer'
+import { addComment, updateBlog } from '../reducers/blogReducer'
 import { useDispatch } from 'react-redux'
 
 const Blog = ({ blog }) => {
@@ -19,6 +19,14 @@ const Blog = ({ blog }) => {
     dispatch(updateBlog(blog.id, newBlog))
   }
 
+  const handleAddComment = (event) => {
+    event.preventDefault()
+    const comment = event.target[0].value
+    console.log('handleAddComment comment:', comment)
+    event.target[0].value = ''
+    dispatch(addComment(blog.id, comment))
+  }
+
   return (
     <div data-testid='blog'>
       <h2>{blog.title} {blog.user.name}</h2>
@@ -32,26 +40,26 @@ const Blog = ({ blog }) => {
         <button onClick={() => handleLike(blog)}>like</button>
       </div>
       <div>added by {blog.user.name}</div>
+
+      <h3>comments</h3>
+      <form onSubmit={handleAddComment}>
+        <input type="text" placeholder="input comment here" name='comment'/>
+        <button type="submit">add comment</button>
+      </form>
       <Comments comments={blog.comments} />
     </div>
   )
 }
 
 const Comments = ({ comments }) => {
-  return (
-    <div>
-      <h3>comments</h3>
-      {
-        (!comments || comments.length === 0)
-          ? <div>No comments yet</div>
-          : <ul>
-            {comments.map((comment, index) => (
-              <li key={index}>{comment}</li>
-            ))}
-          </ul>
-      }
-    </div>
-  )
+  if (!comments || comments.length === 0)
+    return <div>No comments yet</div>
+
+  return (<ul>
+    {comments.map((comment, index) => (
+      <li key={index}>{comment}</li>
+    ))}
+  </ul>)
 }
 
 export default Blog
