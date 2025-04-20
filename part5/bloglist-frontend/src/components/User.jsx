@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom"
+import { useParams } from 'react-router-dom'
 
 const User = ({ users }) => {
   const id = useParams().id
@@ -12,11 +12,14 @@ const User = ({ users }) => {
     <div>
       <h2>{user.name}</h2>
       <h3>added blogs</h3>
-      <ul>
-        {user.blogs.map(blog => (
-          <li key={blog.id}>{blog.title}</li>
-        ))}
-      </ul>
+      {user.blogs.length === 0
+        ? <em>No blogs added yet</em>
+        : <ul>
+          {user.blogs.map(blog => (
+            <li key={blog.id}>{blog.title}</li>
+          ))}
+        </ul>
+      }
     </div>
   )
 }

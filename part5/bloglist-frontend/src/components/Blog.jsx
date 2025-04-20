@@ -1,5 +1,6 @@
 import { addComment, updateBlog } from '../reducers/blogReducer'
 import { useDispatch } from 'react-redux'
+import { Button, Form } from 'react-bootstrap'
 
 const Blog = ({ blog }) => {
   const dispatch = useDispatch()
@@ -37,15 +38,16 @@ const Blog = ({ blog }) => {
       </div>
       <div>
         <span data-testid='likes'>{blog.likes} likes</span>
-        <button onClick={() => handleLike(blog)}>like</button>
+        <Button onClick={() => handleLike(blog)}>like</Button>
       </div>
       <div>added by {blog.user.name}</div>
 
+      <p />
       <h3>comments</h3>
-      <form onSubmit={handleAddComment}>
-        <input type="text" placeholder="input comment here" name='comment'/>
-        <button type="submit">add comment</button>
-      </form>
+      <Form onSubmit={handleAddComment}>
+        <Form.Control type="text" placeholder="input comment here" name='comment'/>
+        <Button type="submit">add comment</Button>
+      </Form>
       <Comments comments={blog.comments} />
     </div>
   )
