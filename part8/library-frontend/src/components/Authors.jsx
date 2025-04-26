@@ -34,12 +34,12 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <BirthYearForm />
+      <BirthYearForm authors={authors}/>
     </div>
   )
 }
 
-const BirthYearForm = () => {
+const BirthYearForm = ({ authors }) => {
   const [name, setName] = useState('')
   const [born, setBorn] = useState('')
 
@@ -55,7 +55,8 @@ const BirthYearForm = () => {
       variables: { name, born: Number(born) }
     })
 
-    setName('')
+    // Keep selected author
+    // setName('')
     setBorn('')
   }
 
@@ -64,9 +65,11 @@ const BirthYearForm = () => {
       <h3>Set birthyear</h3>
       <form onSubmit={submit}>
         <div>
-          name <input value={name}
-            onChange={({ target }) => setName(target.value)}
-          />
+          <select value={name} onChange={({ target }) => setName(target.value)}>
+            {authors.map((a) =>
+              <option key={a.name} value={a.name}>{a.name}</option>
+            )}
+          </select>
         </div>
         <div>
           born <input value={born}
