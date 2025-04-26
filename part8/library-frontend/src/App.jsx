@@ -1,25 +1,27 @@
-import { useState } from "react";
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
 const App = () => {
-  const [page, setPage] = useState("authors");
+  const padding = {
+    padding: 5,
+  }
 
   return (
-    <div>
+    <Router>
       <div>
-        <button onClick={() => setPage("authors")}>authors</button>
-        <button onClick={() => setPage("books")}>books</button>
-        <button onClick={() => setPage("add")}>add book</button>
+        <Link style={padding} to="/">Authors</Link>
+        <Link style={padding} to="/books">Books</Link>
+        <Link style={padding} to="/addbook">Add book</Link>
       </div>
 
-      <Authors show={page === "authors"} />
-
-      <Books show={page === "books"} />
-
-      <NewBook show={page === "add"} />
-    </div>
+      <Routes>
+        <Route path="/" element={<Authors />} />
+        <Route path="/books" element={<Books />} />
+        <Route path="/addbook" element={<NewBook />} />
+      </Routes>
+    </Router>
   );
 };
 

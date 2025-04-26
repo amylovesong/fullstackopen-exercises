@@ -2,12 +2,8 @@ import { useMutation, useQuery } from "@apollo/client"
 import { ALL_AUTHORS, EDIT_BIRTHYEAR } from "../queries"
 import { useState } from "react"
 
-const Authors = (props) => {
+const Authors = () => {
   const result = useQuery(ALL_AUTHORS)
-
-  if (!props.show) {
-    return null
-  }
 
   if (result.loading) {
     return <div>loading...</div>
