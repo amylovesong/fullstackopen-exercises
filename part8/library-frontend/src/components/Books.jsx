@@ -5,13 +5,16 @@ import { useState } from "react"
 const Books = () => {
   const result = useQuery(ALL_BOOKS)
   const [genre, setGenre] = useState('')
+  const filteredResult = useQuery(ALL_BOOKS, {
+    variables: { genre }
+  })
 
-  if (result.loading) {
+  if (result.loading || filteredResult.loading) {
     return <div>loading...</div>
   }
 
   const allBooks = result.data ? result.data.allBooks : []
-  console.log('allBooks:', allBooks)
+  console.log('Books allBooks:', allBooks)
 
   const allGenres = Array.from(
     new Set(
@@ -20,12 +23,10 @@ const Books = () => {
       }, [])
     )
   )
-  console.log('allGenres:', allGenres, 'genre:', genre)
+  console.log('Books allGenres:', allGenres, 'genre:', genre)
 
-  const books = genre
-    ? allBooks.filter(book => book.genres.includes(genre))
-    : allBooks
-  console.log('books:', books)
+  const books = filteredResult.data ? filteredResult.data.allBooks : []
+  console.log('Books books:', books)
 
   return (
     <div>
