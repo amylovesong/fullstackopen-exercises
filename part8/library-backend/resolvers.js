@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken')
 const Author = require('./models/author')
 const Book = require('./models/book')
 const User = require('./models/user')
+const { PubSub } = require('graphql-subscriptions')
+
+const pubsub = new PubSub()
 
 const resolvers = {
   Query: {
@@ -100,7 +103,10 @@ const resolvers = {
           }
         })
       }
-      return Book.findOne({ _id: newBook._id }).populate('author')
+      const bookAdded = await Book.findOne({ _id: newBook._id }).populate('author')
+      console.log('bookAdded:', bookAdded)
+      pubsub.publish('BOOK_ADDED', { bookAdded })
+      return bookAdded
     },
     editAuthor: async (root, args, { currentUser }) => {
       if (!currentUser) {
@@ -162,6 +168,11 @@ const resolvers = {
       return {
         value: jwt.sign(userForToken, process.env.JWT_SECRET)
       }
+    }
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterableIterator('BOOK_ADDED')
     }
   }
 }
