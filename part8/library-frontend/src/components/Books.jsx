@@ -53,7 +53,7 @@ const Books = () => {
       {allGenres.map((genre) => (
         <button key={genre} onClick={() => setGenre(genre)}>{genre}</button>
       ))}
-      <button onClick={() => setGenre(null)}>all genres</button>
+      <button onClick={() => setGenre('')}>all genres</button>
     </div>
   )
 }

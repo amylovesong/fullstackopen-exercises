@@ -175,7 +175,7 @@ const resolvers = {
           }
         })
       }
-      return newBook
+      return Book.findOne({ _id: newBook._id }).populate('author')
     },
     editAuthor: async (root, args, { currentUser }) => {
       if (!currentUser) {
