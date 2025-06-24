@@ -45,16 +45,16 @@ const resolvers = {
       }
     },
     allAuthors: async () =>
-      (await Author.find({})).map(async (author) => {
-        const bookCount = (await Book.find({
-          author: author._id
-        })).length
-        return {
-          ...author._doc,
-          bookCount
-        }
-      }),
+      Author.find({}),
     me: (root, args, context) => context.currentUser
+  },
+  Author: {
+    bookCount: async (root, args, { loaders }) => {
+      // const bookCount = (await Book.find({ author: root._id })).length
+      const bookCount = await loaders.bookCount.load(root._id)
+      console.log('bookCount for author', root.name, 'is', bookCount)
+      return bookCount
+    }
   },
   Mutation: {
     addBook: async (root, args, { currentUser }) => {

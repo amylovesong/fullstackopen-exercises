@@ -17,6 +17,7 @@ const User = require('./models/user')
 
 const typeDefs = require('./schema')
 const resolvers = require('./resolvers')
+const loaders = require('./loaders')
 
 require('dotenv').config()
 
@@ -31,6 +32,8 @@ mongoose.connect(MONGODB_URI)
   .catch((error) => {
     console.log('error connection to MongoDB:', error.message)
   })
+
+mongoose.set('debug', true)
 
 const start = async () => {
   const app = express()
@@ -75,7 +78,10 @@ const start = async () => {
           )
 
           const currentUser = await User.findById(decodedToken.id)
-          return { currentUser }
+          return {
+            currentUser,
+            loaders
+          }
         }
       }
     })
