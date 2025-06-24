@@ -29,10 +29,21 @@ const App = () => {
   }
 
   useSubscription(BOOK_ADDED, {
-      onData: ({ data }) => {
-        console.log('Subscription data received:', data)
+      onData: ({ data, client }) => {
+        console.log('App subscription data received:', data)
         const bookAdded = data.data.bookAdded
         notify(`${bookAdded.title} added`)
+
+        // ▼ update cache if only ALL_BOOKS query needed
+        // client.cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+        // })
+
+        // ▼ books related caches are all outdated, evict them
+        client.cache.evict({
+          id: 'ROOT_QUERY',
+          fieldName: 'allBooks'
+        })
+        client.cache.gc()
       }
     })
 

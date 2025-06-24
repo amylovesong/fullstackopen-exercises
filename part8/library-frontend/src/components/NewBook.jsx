@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client'
 import { useState } from 'react'
-import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS } from '../queries'
+import { ADD_BOOK, ALL_AUTHORS } from '../queries'
 
 const NewBook = () => {
   const [title, setTitle] = useState('')
@@ -11,14 +11,15 @@ const NewBook = () => {
 
   const [addBook] = useMutation(ADD_BOOK, {
     refetchQueries: [{ query: ALL_AUTHORS }],
-    update: (cache, response) => {
-      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
-        console.log('NewBook update cache response:', response)
-        return {
-          allBooks: allBooks.concat(response.data.addBook)
-        }
-      })
-    }
+    // Subscription update logic instead of this
+    // update: (cache, response) => {
+    //   cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+    //     console.log('NewBook update cache response:', response)
+    //     return {
+    //       allBooks: allBooks.concat(response.data.addBook)
+    //     }
+    //   })
+    // }
   })
 
   const submit = async (event) => {

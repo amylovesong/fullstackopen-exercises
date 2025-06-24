@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client"
-import { ALL_BOOKS } from "../queries"
 import { useState } from "react"
+import { ALL_BOOKS } from "../queries"
 
 const Books = () => {
   const result = useQuery(ALL_BOOKS)
@@ -8,6 +8,7 @@ const Books = () => {
   const filteredResult = useQuery(ALL_BOOKS, {
     variables: { genre }
   })
+  console.log('Books filteredResult:', filteredResult)
 
   if (result.loading || filteredResult.loading) {
     return <div>loading...</div>
